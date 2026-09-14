@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_14_000659) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_14_033216) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "capitals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "end_date"
+    t.boolean "enddate_approximate"
+    t.string "name"
+    t.bigint "political_era_id", null: false
+    t.date "start_date"
+    t.boolean "startdate_approximate"
+    t.datetime "updated_at", null: false
+    t.index ["political_era_id"], name: "index_capitals_on_political_era_id"
+  end
 
   create_table "constellations", force: :cascade do |t|
     t.string "abbreviation"
@@ -74,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_14_000659) do
     t.string "nome", limit: 255
   end
 
+  add_foreign_key "capitals", "political_eras"
   add_foreign_key "political_eras", "countries"
   add_foreign_key "political_eras", "dynasties"
   add_foreign_key "political_eras", "government_types"
