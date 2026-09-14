@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :political_eras
   resources :dynasties
   resources :government_types
   resources :countries

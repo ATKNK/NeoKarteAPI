@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  country: one
+  start_date: 2026-09-14
+  end_date: 2026-09-14
+  full_name: MyString
+  full_name_local: MyString
+  dynasty: one
+  government_type: one
+  startdate_approximate: false
+  enddate_approximate: false
+
+two:
+  name: MyString
+  country: two
+  start_date: 2026-09-14
+  end_date: 2026-09-14
+  full_name: MyString
+  full_name_local: MyString
+  dynasty: two
+  government_type: two
+  startdate_approximate: false
+  enddate_approximate: false

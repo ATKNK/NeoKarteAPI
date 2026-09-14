@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_13_235425) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_14_000659) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,6 +41,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_235425) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "political_eras", force: :cascade do |t|
+    t.bigint "country_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "dynasty_id", null: false
+    t.date "end_date"
+    t.boolean "enddate_approximate"
+    t.string "full_name"
+    t.string "full_name_local"
+    t.bigint "government_type_id", null: false
+    t.string "name"
+    t.date "start_date"
+    t.boolean "startdate_approximate"
+    t.datetime "updated_at", null: false
+    t.index ["country_id"], name: "index_political_eras_on_country_id"
+    t.index ["dynasty_id"], name: "index_political_eras_on_dynasty_id"
+    t.index ["government_type_id"], name: "index_political_eras_on_government_type_id"
+  end
+
   create_table "stars", force: :cascade do |t|
     t.bigint "constellation_id", null: false
     t.datetime "created_at", null: false
@@ -56,5 +74,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_13_235425) do
     t.string "nome", limit: 255
   end
 
+  add_foreign_key "political_eras", "countries"
+  add_foreign_key "political_eras", "dynasties"
+  add_foreign_key "political_eras", "government_types"
   add_foreign_key "stars", "constellations"
 end
