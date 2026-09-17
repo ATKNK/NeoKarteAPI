@@ -3,13 +3,20 @@ class PoliticalErasController < ApplicationController
 
   # GET /political_eras
   def index
-    @political_eras = PoliticalEra.all
+    @political_eras = Country.find(params[:country_id]).political_eras
 
     render json: @political_eras
   end
 
   # GET /political_eras/1
   def show
+    render json: @political_era
+  end
+
+  # GET /political_eras/1/date=1444-11-11
+  def show_by_year
+    @political_era = Country.find(params[:country_id]).political_eras.where("start_date <= ? AND end_date >= ?", params[:selected_date], params[:selected_date]).all
+
     render json: @political_era
   end
 

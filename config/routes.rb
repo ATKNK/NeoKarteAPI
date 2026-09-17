@@ -3,7 +3,12 @@ Rails.application.routes.draw do
   resources :political_eras
   resources :dynasties
   resources :government_types
-  resources :countries
+
+  resources :countries do
+    resources :political_eras, only: [:index] do
+      get "show_by_year", to: 'political_eras#show_by_year', on: :collection
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
