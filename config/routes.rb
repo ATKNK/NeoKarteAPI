@@ -1,11 +1,16 @@
 Rails.application.routes.draw do
+  resources :flags
   resources :people
   resources :capitals
   resources :political_eras
   resources :dynasties
   resources :government_types
 
-  resources :countries do
+  get "countries/:tag", to: "countries#show_by_tag", constraints: { tag: /[A-Z]+/ }
+  get "countries/:tag/political_eras", to: "political_eras#index_by_tag", constraints: { tag: /[A-Z]+/ }
+  get "countries/:tag/political_eras/show_by_year", to: "political_eras#show_by_year", constraints: { tag: /[A-Z]+/ }
+
+  resources :countries, only: %i[ index show create update destroy ] do
     resources :political_eras, only: [:index] do
       get "show_by_year", to: 'political_eras#show_by_year', on: :collection
     end

@@ -23,6 +23,16 @@ class PoliticalErasControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should show political eras by year and country tag" do
+    country = countries(:one)
+    country.update!(tag: "TEST")
+
+    get "/countries/TEST/political_eras/show_by_year", params: { selected_date: "2026-09-14" }, as: :json
+
+    assert_response :success
+    assert_equal [@political_era.id], response.parsed_body.map { |political_era| political_era["id"] }
+  end
+
   test "should update political_era" do
     patch political_era_url(@political_era), params: { political_era: { country_id: @political_era.country_id, dynasty_id: @political_era.dynasty_id, end_date: @political_era.end_date, enddate_approximate: @political_era.enddate_approximate, full_name: @political_era.full_name, full_name_local: @political_era.full_name_local, government_type_id: @political_era.government_type_id, name: @political_era.name, start_date: @political_era.start_date, startdate_approximate: @political_era.startdate_approximate } }, as: :json
     assert_response :success

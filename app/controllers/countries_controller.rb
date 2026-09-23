@@ -1,4 +1,7 @@
 class CountriesController < ApplicationController
+
+  before_action :set_country_by_tag, only: %i[ show_by_tag ]
+
   before_action :set_country, only: %i[ show update destroy ]
 
   # GET /countries
@@ -10,6 +13,10 @@ class CountriesController < ApplicationController
 
   # GET /countries/1
   def show
+    render json: @country
+  end
+
+  def show_by_tag
     render json: @country
   end
 
@@ -42,6 +49,10 @@ class CountriesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_country
       @country = Country.find(params.expect(:id))
+    end
+
+    def set_country_by_tag
+      @country = Country.find_by!(tag: params.expect(:tag))
     end
 
     # Only allow a list of trusted parameters through.
