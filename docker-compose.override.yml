@@ -1,5 +1,14 @@
 services:
+  seaweedfs:
+    image: chrislusf/seaweedfs
+    ports:
+      - "8333:8333" # gateway S3-compatible
+      - "9333:9333" # master (admin)
+      - "8888:8888"
+    command: server -s3 -s3.port=8333
   web:
+    depends_on:
+      - seaweedfs
     build:
       context: .
       dockerfile: Dockerfile.dev

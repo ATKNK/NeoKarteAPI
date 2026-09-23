@@ -6,6 +6,15 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
+seaweedfs:
+  service: S3
+  endpoint: <%= ENV["SEAWEEDFS_HOST"] %>
+  access_key_id: any
+  secret_access_key: any
+  region: us-east-1
+  bucket: flags
+  force_path_style: true
+
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
 #   service: S3
