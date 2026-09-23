@@ -148,7 +148,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
-    json (2.7.2)
+    json (3.0.2)
     kamal (2.12.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
@@ -384,7 +384,7 @@ DEPENDENCIES
   debug
   dotenv (~> 3.1)
   image_processing (~> 1.2)
-  json (< 3)
+  json (< 4)
   kamal
   pg (~> 1.1)
   puma (>= 5.0)
