@@ -9,10 +9,10 @@ local:
 seaweedfs:
   service: S3
   endpoint: <%= ENV["SEAWEEDFS_HOST"] %>
-  access_key_id: any
-  secret_access_key: any
+  access_key_id: <%= ENV["SEAWEEDFS_ACCESS_KEY"] %>
+  secret_access_key: <%= ENV["SEAWEEDFS_SECRET_KEY"] %>
   region: us-east-1
-  bucket: flags
+  bucket: <%= ENV["SEAWEEDFS_BUCKET"] %>
   force_path_style: true
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
