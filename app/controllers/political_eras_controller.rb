@@ -5,7 +5,11 @@ class PoliticalErasController < ApplicationController
 
   # GET /political_eras
   def index
-    @political_eras = Country.find(params[:country_id]).political_eras.includes(:flags)
+    @political_eras = if params[:country_id]
+      Country.find(params[:country_id]).political_eras.includes(:flags)
+    else
+      PoliticalEra.includes(:flags)
+    end
 
     render json: political_eras_json(@political_eras)
   end
