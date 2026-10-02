@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  era: one
+  person: one
+  start: 2026-10-02
+  end: 2026-10-02
+  startdate_approximate: false
+  enddate_approximate: false
+
+two:
+  era: two
+  person: two
+  start: 2026-10-02
+  end: 2026-10-02
+  startdate_approximate: false
+  enddate_approximate: false
