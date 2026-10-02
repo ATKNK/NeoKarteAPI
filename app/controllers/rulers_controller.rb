@@ -46,6 +46,6 @@ class RulersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def ruler_params
-      params.expect(ruler: [ :era_id, :person_id, :start, :end, :startdate_approximate, :enddate_approximate ])
+      params.expect(ruler: [ :political_era_id, :person_id, :start, :end, :startdate_approximate, :enddate_approximate ])
     end
 end

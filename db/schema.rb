@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_073752) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_235228) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,6 +127,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_073752) do
     t.index ["government_type_id"], name: "index_political_eras_on_government_type_id"
   end
 
+  create_table "rulers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "end"
+    t.boolean "enddate_approximate"
+    t.bigint "person_id", null: false
+    t.bigint "political_era_id", null: false
+    t.date "start"
+    t.boolean "startdate_approximate"
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_rulers_on_person_id"
+    t.index ["political_era_id"], name: "index_rulers_on_political_era_id"
+  end
+
   create_table "songs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -156,5 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_073752) do
   add_foreign_key "political_eras", "countries"
   add_foreign_key "political_eras", "dynasties"
   add_foreign_key "political_eras", "government_types"
+  add_foreign_key "rulers", "people"
+  add_foreign_key "rulers", "political_eras"
   add_foreign_key "stars", "constellations"
 end
