@@ -6,16 +6,16 @@ class PoliticalErasController < ApplicationController
   # GET /political_eras
   def index
     @political_eras = if params[:country_id]
-      Country.find(params[:country_id]).political_eras.includes(:flags)
+      Country.find(params[:country_id]).political_eras.includes(:flags, :capitals)
     else
-      PoliticalEra.includes(:flags)
+      PoliticalEra.includes(:flags, :capitals)
     end
 
     render json: political_eras_json(@political_eras)
   end
 
   def index_by_tag
-    @political_eras = @country.political_eras.includes(:flags)
+    @political_eras = @country.political_eras.includes(:flags, :capitals)
     render json: political_eras_json(@political_eras)
   end
 
@@ -26,9 +26,14 @@ class PoliticalErasController < ApplicationController
 
   # GET /political_eras/1/date=1444-11-11
   def show_by_year
-    @political_era = @country.political_eras.includes(:flags).where("start_date <= ? AND end_date >= ?", params[:selected_date], params[:selected_date]).all
+    selected_date = params.expect(:selected_date)
+    @political_era = @country.political_eras.includes(:flags, :capitals).where(
+      "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
+      selected_date,
+      selected_date
+    )
 
-    render json: political_eras_json(@political_era, selected_date: params[:selected_date])
+    render json: political_eras_json(@political_era, selected_date:)
   end
 
   # POST /political_eras
@@ -77,11 +82,24 @@ class PoliticalErasController < ApplicationController
     def political_era_json(political_era, selected_date: nil)
       flags = political_era.flags
       if selected_date
-        flags = flags.where("start_date <= ? AND end_date >= ?", selected_date, selected_date)
+        flags = flags.where(
+          "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
+          selected_date,
+          selected_date
+        )
       end
       flag = flags.order(:start_date).first
+      capitals = political_era.capitals
+      if selected_date
+        capitals = capitals.where(
+          "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
+          selected_date,
+          selected_date
+        )
+      end
 
       political_era.as_json.merge(
+        capitals: capitals.order(:start_date).as_json,
         flag: flag&.as_json&.merge(
           image: flag.image.attached? ? url_for(flag.image) : nil
         )
@@ -90,6 +108,6 @@ class PoliticalErasController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def political_era_params
-      params.expect(political_era: [ :name, :country_id, :start_date, :end_date, :full_name, :full_name_local, :dynasty_id, :government_type_id, :startdate_approximate, :enddate_approximate ])
+      params.expect(political_era: [ :name, :country_id, :start_date, :end_date, :full_name, :full_name_local, :dynasty_id, :government_type_id, :capitals, :startdate_approximate, :enddate_approximate ])
     end
 end
