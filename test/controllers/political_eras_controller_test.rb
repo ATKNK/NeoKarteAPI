@@ -21,6 +21,49 @@ class PoliticalErasControllerTest < ActionDispatch::IntegrationTest
   test "should show political_era" do
     get political_era_url(@political_era), as: :json
     assert_response :success
+    assert_equal @political_era.government_type.name, response.parsed_body.dig("government_type", "name")
+    assert_equal @political_era.government_type_id, response.parsed_body.dig("government_type", "id")
+  end
+
+  test "should include government type details in political era collections" do
+    get political_eras_url, as: :json
+    assert_response :success
+    assert_equal @political_era.government_type.name, response.parsed_body.first.dig("government_type", "name")
+    assert_equal @political_era.government_type_id, response.parsed_body.first.dig("government_type", "id")
+
+    get "/countries/#{@political_era.country_id}/political_eras/show_by_year",
+      params: { selected_date: @political_era.start_date }, as: :json
+    assert_response :success
+    assert_equal @political_era.government_type.name, response.parsed_body.first.dig("government_type", "name")
+    assert_equal @political_era.government_type_id, response.parsed_body.first.dig("government_type", "id")
+  end
+
+  test "should include rulers and their people in political era index" do
+    ruler = rulers(:one)
+
+    get political_eras_url, as: :json
+
+    assert_response :success
+    political_era_json = response.parsed_body.find { |era| era["id"] == ruler.political_era_id }
+    ruler_json = political_era_json.fetch("rulers").find { |item| item["id"] == ruler.id }
+    assert_equal ruler.person_id, ruler_json.dig("person", "id")
+    assert_equal ruler.person.name, ruler_json.dig("person", "name")
+  end
+
+  test "should include ruler portrait image in political eras by year" do
+    portrait = portraits(:one)
+    portrait.image.attach(
+      io: StringIO.new("portrait image"),
+      filename: "portrait.png",
+      content_type: "image/png"
+    )
+
+    get "/countries/#{@political_era.country_id}/political_eras/show_by_year",
+      params: { selected_date: @political_era.start_date }, as: :json
+
+    assert_response :success
+    ruler_json = response.parsed_body.first.fetch("rulers").find { |item| item["id"] == portrait.ruler_id }
+    assert_match %r{/rails/active_storage/blobs/}, ruler_json.fetch("image")
   end
 
   test "should show political eras by year and country tag" do

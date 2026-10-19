@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_235228) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_19_025841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,6 +127,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_235228) do
     t.index ["government_type_id"], name: "index_political_eras_on_government_type_id"
   end
 
+  create_table "portraits", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "ruler_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ruler_id"], name: "index_portraits_on_ruler_id"
+  end
+
   create_table "rulers", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "end"
@@ -169,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_235228) do
   add_foreign_key "political_eras", "countries"
   add_foreign_key "political_eras", "dynasties"
   add_foreign_key "political_eras", "government_types"
+  add_foreign_key "portraits", "rulers"
   add_foreign_key "rulers", "people"
   add_foreign_key "rulers", "political_eras"
   add_foreign_key "stars", "constellations"

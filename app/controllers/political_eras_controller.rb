@@ -6,16 +6,22 @@ class PoliticalErasController < ApplicationController
   # GET /political_eras
   def index
     @political_eras = if params[:country_id]
-      Country.find(params[:country_id]).political_eras.includes(:flags, :capitals)
+      Country.find(params[:country_id]).political_eras.includes(
+        :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+      )
     else
-      PoliticalEra.includes(:flags, :capitals)
+      PoliticalEra.includes(
+        :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+      )
     end
 
     render json: political_eras_json(@political_eras)
   end
 
   def index_by_tag
-    @political_eras = @country.political_eras.includes(:flags, :capitals)
+    @political_eras = @country.political_eras.includes(
+      :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+    )
     render json: political_eras_json(@political_eras)
   end
 
@@ -27,7 +33,9 @@ class PoliticalErasController < ApplicationController
   # GET /political_eras/1/date=1444-11-11
   def show_by_year
     selected_date = params.expect(:selected_date)
-    @political_era = @country.political_eras.includes(:flags, :capitals).where(
+    @political_era = @country.political_eras.includes(
+      :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+    ).where(
       "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
       selected_date,
       selected_date
@@ -64,7 +72,9 @@ class PoliticalErasController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_political_era
-      @political_era = PoliticalEra.find(params.expect(:id))
+      @political_era = PoliticalEra.includes(
+        :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+      ).find(params.expect(:id))
     end
 
     def set_country
@@ -98,7 +108,16 @@ class PoliticalErasController < ApplicationController
         )
       end
 
+      rulers = political_era.rulers.map do |ruler|
+        portrait = ruler.portrait
+        ruler.as_json(include: :person).merge(
+          image: portrait&.image&.attached? ? url_for(portrait.image) : nil
+        )
+      end
+
       political_era.as_json.merge(
+        government_type: political_era.government_type.as_json,
+        rulers:,
         capitals: capitals.order(:start_date).as_json,
         flag: flag&.as_json&.merge(
           image: flag.image.attached? ? url_for(flag.image) : nil
@@ -108,6 +127,6 @@ class PoliticalErasController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def political_era_params
-      params.expect(political_era: [ :name, :country_id, :start_date, :end_date, :full_name, :full_name_local, :dynasty_id, :government_type_id, :capitals, :startdate_approximate, :enddate_approximate ])
+      params.expect(political_era: [ :name, :country_id, :start_date, :end_date, :full_name, :full_name_local, :dynasty_id, :government_type_id, :capitals, :startdate_approximate, :enddate_approximate, :government_type, :rulers])
     end
 end
