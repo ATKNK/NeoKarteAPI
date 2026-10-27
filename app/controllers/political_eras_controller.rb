@@ -7,11 +7,13 @@ class PoliticalErasController < ApplicationController
   def index
     @political_eras = if params[:country_id]
       Country.find(params[:country_id]).political_eras.includes(
-        :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+        { flags: { image_attachment: :blob } }, :capitals, :government_type,
+        rulers: [ :person, { portrait: { image_attachment: :blob } } ]
       )
     else
       PoliticalEra.includes(
-        :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+        { flags: { image_attachment: :blob } }, :capitals, :government_type,
+        rulers: [ :person, { portrait: { image_attachment: :blob } } ]
       )
     end
 
@@ -20,7 +22,8 @@ class PoliticalErasController < ApplicationController
 
   def index_by_tag
     @political_eras = @country.political_eras.includes(
-      :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+      { flags: { image_attachment: :blob } }, :capitals, :government_type,
+      rulers: [ :person, { portrait: { image_attachment: :blob } } ]
     )
     render json: political_eras_json(@political_eras)
   end
@@ -34,7 +37,8 @@ class PoliticalErasController < ApplicationController
   def show_by_year
     selected_date = params.expect(:selected_date)
     @political_era = @country.political_eras.includes(
-      :flags, :capitals, :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+      { flags: { image_attachment: :blob } }, :capitals, :government_type,
+      rulers: [ :person, { portrait: { image_attachment: :blob } } ]
     ).where(
       "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
       selected_date,
@@ -73,7 +77,8 @@ class PoliticalErasController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_political_era
       @political_era = PoliticalEra.includes(
-        :government_type, rulers: [ :person, { portrait: { image_attachment: :blob } } ]
+        { flags: { image_attachment: :blob } }, :capitals, :government_type,
+        rulers: [ :person, { portrait: { image_attachment: :blob } } ]
       ).find(params.expect(:id))
     end
 
@@ -98,7 +103,11 @@ class PoliticalErasController < ApplicationController
           selected_date
         )
       end
-      flag = flags.order(:start_date).first
+      flags = flags.order(:start_date).map do |flag|
+        flag.as_json.merge(
+          image: flag.image.attached? ? url_for(flag.image) : nil
+        )
+      end
       capitals = political_era.capitals
       if selected_date
         capitals = capitals.where(
@@ -119,9 +128,7 @@ class PoliticalErasController < ApplicationController
         government_type: political_era.government_type.as_json,
         rulers:,
         capitals: capitals.order(:start_date).as_json,
-        flag: flag&.as_json&.merge(
-          image: flag.image.attached? ? url_for(flag.image) : nil
-        )
+        flags:
       )
     end
 

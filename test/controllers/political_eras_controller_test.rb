@@ -76,7 +76,7 @@ class PoliticalErasControllerTest < ActionDispatch::IntegrationTest
     assert_equal [@political_era.id], response.parsed_body.map { |political_era| political_era["id"] }
   end
 
-  test "should include political eras and flags without an end date" do
+  test "should include all flags and filter them by year" do
     country = countries(:one)
     country.update!(tag: "TEST")
     political_era = PoliticalEra.create!(
@@ -86,21 +86,39 @@ class PoliticalErasControllerTest < ActionDispatch::IntegrationTest
       start_date: "2026-09-14"
     )
     flag = Flag.create!(political_era:, start_date: "2026-09-21")
+    second_flag = Flag.create!(political_era:, start_date: "2026-09-22")
+    expired_flag = Flag.create!(
+      political_era:,
+      start_date: "2026-09-23",
+      end_date: "2026-09-25"
+    )
+    second_flag.image.attach(
+      io: StringIO.new("flag image"),
+      filename: "flag.png",
+      content_type: "image/png"
+    )
     capital = Capital.create!(political_era:, name: "Test Capital", start_date: "2026-09-21")
     params = { selected_date: "2026-10-01" }
+
+    get political_eras_url, as: :json
+
+    assert_response :success
+    all_flags = response.parsed_body.find { |era| era["id"] == political_era.id }.fetch("flags")
+    assert_equal [flag.id, second_flag.id, expired_flag.id], all_flags.map { |item| item["id"] }
+    assert_match %r{/rails/active_storage/blobs/}, all_flags.second.fetch("image")
 
     get "/countries/TEST/political_eras/show_by_year", params:, as: :json
 
     assert_response :success
     assert_equal [political_era.id], response.parsed_body.map { |era| era["id"] }
-    assert_equal flag.id, response.parsed_body.first.dig("flag", "id")
+    assert_equal [flag.id, second_flag.id], response.parsed_body.first.fetch("flags").map { |item| item["id"] }
     assert_equal [capital.id], response.parsed_body.first.fetch("capitals").map { |item| item["id"] }
 
     get "/countries/#{country.id}/political_eras/show_by_year", params:, as: :json
 
     assert_response :success
     assert_equal [political_era.id], response.parsed_body.map { |era| era["id"] }
-    assert_equal flag.id, response.parsed_body.first.dig("flag", "id")
+    assert_equal [flag.id, second_flag.id], response.parsed_body.first.fetch("flags").map { |item| item["id"] }
     assert_equal [capital.id], response.parsed_body.first.fetch("capitals").map { |item| item["id"] }
   end
 
