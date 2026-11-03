@@ -1,3 +1,3 @@
 class Person < ApplicationRecord
-  belongs_to :dynasty
+  belongs_to :dynasty, optional: true
 end
