@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_193000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_09_223446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -94,6 +94,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_193000) do
   create_table "government_types", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "historical_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "end_date"
+    t.boolean "enddate_approximate"
+    t.decimal "latitude"
+    t.string "location"
+    t.decimal "longitude"
+    t.string "name"
+    t.date "start_date"
+    t.boolean "startdate_approximate"
     t.datetime "updated_at", null: false
   end
 

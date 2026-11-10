@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :historical_events
   resources :portraits
   resources :rulers
   resources :flags
