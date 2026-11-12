@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :users, only: [ :create ]
+  resource :session, only: %i[ show create destroy ]
+  get "csrf_token", to: "csrf_tokens#show", as: :csrf_token
+
   resources :historical_events
   resources :portraits
   resources :rulers
