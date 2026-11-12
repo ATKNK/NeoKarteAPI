@@ -10,7 +10,7 @@ gem "dotenv", "~> 3.1"
 
 gem "aws-sdk-s3", require: false
 
-gem "json", "< 3"
+gem "json", "< 4"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
