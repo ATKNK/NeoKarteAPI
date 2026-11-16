@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_125717) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_223049) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,6 +82,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_125717) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "event_images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "historical_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["historical_event_id"], name: "index_event_images_on_historical_event_id"
+  end
+
   create_table "flags", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "end_date"
@@ -99,6 +106,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_125717) do
 
   create_table "historical_events", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.date "end_date"
     t.boolean "enddate_approximate"
     t.decimal "latitude"
@@ -185,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_125717) do
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.string "role", default: "user"
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
@@ -192,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_125717) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "capitals", "political_eras"
+  add_foreign_key "event_images", "historical_events"
   add_foreign_key "flags", "political_eras"
   add_foreign_key "people", "dynasties"
   add_foreign_key "political_eras", "countries"
