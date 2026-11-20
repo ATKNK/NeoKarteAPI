@@ -11,6 +11,8 @@ module App
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    config.active_storage.routes_prefix = "/api/active_storage"
+
     config.session_store :cookie_store,
       key: "_neokarte_api_session",
       httponly: true,
