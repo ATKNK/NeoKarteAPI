@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: neokarte-api
     build:
       context: .
       dockerfile: Dockerfile
@@ -8,9 +9,27 @@ services:
       - "127.0.0.1:3000:3000"
     env_file:
       - .env.production
-    volumes:
-      - neokarte_storage:/rails/storage
     restart: unless-stopped
+    networks:
+      - shared_network
+    labels:
+      - "traefik.enable=true"
 
-volumes:
-  neokarte_storage:
+      # API: https://neokarte.atknk.tech/api/*
+      - "traefik.http.routers.neokarte-api.rule=Host(`neokarte.atknk.tech`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.neokarte-api.entrypoints=websecure"
+      - "traefik.http.routers.neokarte-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.neokarte-api.priority=100"
+      - "traefik.http.routers.neokarte-api.service=neokarte-api"
+      - "traefik.http.services.neokarte-api.loadbalancer.server.port=3000"
+
+      # HTTP -> HTTPS
+      - "traefik.http.routers.neokarte-http.rule=Host(`neokarte.atknk.tech`)"
+      - "traefik.http.routers.neokarte-http.entrypoints=web"
+      - "traefik.http.routers.neokarte-http.middlewares=neokarte-https"
+      - "traefik.http.middlewares.neokarte-https.redirectscheme.scheme=https"
+
+networks:
+  shared_network:
+    external: true
+    name: shared_network
