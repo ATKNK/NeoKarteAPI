@@ -3,7 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: ["./bin/rails", "server"]
     ports:
-      - "80:80"
+      - "127.0.0.1:3000:3000"
     env_file:
       - .env.production
+    volumes:
+      - neokarte_storage:/rails/storage
+    restart: unless-stopped
+
+volumes:
+  neokarte_storage:

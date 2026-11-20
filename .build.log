@@ -1,0 +1,13 @@
+2026-11-17T17:33:07.998844 Project directory: /docker/neokarte-api
+2026-11-17T17:33:08.001374 Pulling project images
+2026-11-17T17:33:08.004131 ------------------------------
+2026-11-17T17:33:08.207086  web Skipped No image to be pulled
+2026-11-17T17:33:08.216622 ------------------------------
+2026-11-17T17:33:08.216832 Deploying project
+2026-11-17T17:33:08.218907 ------------------------------
+2026-11-17T17:33:08.410487  Container neokarte-api-web-1 Recreate 
+2026-11-17T17:33:12.055653  Container neokarte-api-web-1 Recreated 
+2026-11-17T17:33:12.069167  Container neokarte-api-web-1 Starting 
+2026-11-17T17:33:12.427013  Container neokarte-api-web-1 Started 
+2026-11-17T17:33:12.444244 ------------------------------
+2026-11-17T17:33:12.444312 Project deployed successfully

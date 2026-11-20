@@ -18,6 +18,7 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  sslmode: require
 
 
 development:
@@ -87,9 +88,11 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: app_production
-    username: app
-    password: <%= ENV["APP_DATABASE_PASSWORD"] %>
+    database: <%= ENV["DB_NAME"] %>
+    username: <%= ENV["DB_USER"] %>
+    password: <%= ENV["DB_PASSWORD"] %>
+    host: <%= ENV["DB_HOST"] %>
+    port: <%= ENV["DB_PORT"] %>
   cache:
     <<: *primary_production
     database: app_production_cache
