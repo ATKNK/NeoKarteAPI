@@ -1,0 +1,9 @@
+.git/
+.gitignore
+/.env*
+!/.env.example
+/log/*
+/tmp/*
+/storage/*
+/config/master.key
+node_modules/
