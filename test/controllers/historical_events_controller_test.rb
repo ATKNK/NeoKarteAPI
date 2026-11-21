@@ -10,30 +10,30 @@ class HistoricalEventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get historical events active on the selected date" do
-    selected_date = Date.new(2026, 11, 9)
+  test "should get historical events from the selected year" do
+    selected_date = Date.new(1444, 11, 11)
     active_event = HistoricalEvent.create!(
-      name: "Evento durante a data selecionada",
-      start_date: selected_date - 2.days,
-      end_date: selected_date + 2.days
+      name: "Evento no ano selecionado",
+      start_date: Date.new(1444, 11, 10),
+      end_date: Date.new(1444, 11, 10)
     )
-    event_starting_later = HistoricalEvent.create!(
-      name: "Evento futuro",
-      start_date: selected_date + 1.day,
-      end_date: selected_date + 3.days
+    event_spanning_years = HistoricalEvent.create!(
+      name: "Evento entre anos",
+      start_date: Date.new(1443, 12, 30),
+      end_date: Date.new(1444, 1, 2)
     )
-    expired_event = HistoricalEvent.create!(
-      name: "Evento encerrado",
-      start_date: selected_date - 3.days,
-      end_date: selected_date - 1.day
+    event_from_next_year = HistoricalEvent.create!(
+      name: "Evento do próximo ano",
+      start_date: Date.new(1445, 1, 1),
+      end_date: Date.new(1445, 1, 3)
     )
 
-    get "/api/historical_events/show_by_date", params: { selected_date: }, as: :json
+    get "/api/historical_events/show_by_year", params: { selected_date: }, as: :json
 
     assert_response :success
-    assert_equal [active_event.id], response.parsed_body.map { |event| event["id"] }
-    refute_includes response.parsed_body.map { |event| event["id"] }, event_starting_later.id
-    refute_includes response.parsed_body.map { |event| event["id"] }, expired_event.id
+    event_ids = response.parsed_body.map { |event| event["id"] }
+    assert_equal [active_event.id, event_spanning_years.id].sort, event_ids.sort
+    refute_includes event_ids, event_from_next_year.id
   end
 
   test "should create historical_event" do

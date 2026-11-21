@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     resource :session, only: %i[ show create destroy ]
     get "csrf_token", to: "csrf_tokens#show", as: :csrf_token
 
-    get "historical_events/show_by_date", to: "historical_events#show_by_date"
+    get "historical_events/show_by_year", to: "historical_events#show_by_year"
     resources :historical_events
     resources :portraits
     resources :rulers

@@ -8,12 +8,14 @@ class HistoricalEventsController < ApplicationController
     render json: @historical_events.map { |historical_event| historical_event_json(historical_event) }
   end
 
-  def show_by_date
-    selected_date = params.expect(:selected_date)
+  def show_by_year
+    selected_date = Date.iso8601(params.expect(:selected_date))
+    year_start = Date.new(selected_date.year, 1, 1)
+    year_end = Date.new(selected_date.year, 12, 31)
     @historical_events = HistoricalEvent.includes(event_images: { image_attachment: :blob }).where(
       "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
-      selected_date,
-      selected_date
+      year_end,
+      year_start
     )
 
     render json: @historical_events.map { |historical_event| historical_event_json(historical_event) }
