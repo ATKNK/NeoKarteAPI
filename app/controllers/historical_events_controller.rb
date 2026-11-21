@@ -8,6 +8,17 @@ class HistoricalEventsController < ApplicationController
     render json: @historical_events.map { |historical_event| historical_event_json(historical_event) }
   end
 
+  def show_by_date
+    selected_date = params.expect(:selected_date)
+    @historical_events = HistoricalEvent.includes(event_images: { image_attachment: :blob }).where(
+      "start_date <= ? AND (end_date IS NULL OR end_date >= ?)",
+      selected_date,
+      selected_date
+    )
+
+    render json: @historical_events.map { |historical_event| historical_event_json(historical_event) }
+  end
+
   # GET /historical_events/1
   def show
     render json: historical_event_json(@historical_event)

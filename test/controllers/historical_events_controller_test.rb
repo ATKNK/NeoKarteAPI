@@ -10,6 +10,32 @@ class HistoricalEventsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should get historical events active on the selected date" do
+    selected_date = Date.new(2026, 11, 9)
+    active_event = HistoricalEvent.create!(
+      name: "Evento durante a data selecionada",
+      start_date: selected_date - 2.days,
+      end_date: selected_date + 2.days
+    )
+    event_starting_later = HistoricalEvent.create!(
+      name: "Evento futuro",
+      start_date: selected_date + 1.day,
+      end_date: selected_date + 3.days
+    )
+    expired_event = HistoricalEvent.create!(
+      name: "Evento encerrado",
+      start_date: selected_date - 3.days,
+      end_date: selected_date - 1.day
+    )
+
+    get "/api/historical_events/show_by_date", params: { selected_date: }, as: :json
+
+    assert_response :success
+    assert_equal [active_event.id], response.parsed_body.map { |event| event["id"] }
+    refute_includes response.parsed_body.map { |event| event["id"] }, event_starting_later.id
+    refute_includes response.parsed_body.map { |event| event["id"] }, expired_event.id
+  end
+
   test "should create historical_event" do
     assert_difference("HistoricalEvent.count") do
       post historical_events_url, params: { historical_event: { end_date: @historical_event.end_date, enddate_approximate: @historical_event.enddate_approximate, latitude: @historical_event.latitude, location: @historical_event.location, longitude: @historical_event.longitude, name: @historical_event.name, start_date: @historical_event.start_date, startdate_approximate: @historical_event.startdate_approximate, description: "Descrição do evento" } }, as: :json
